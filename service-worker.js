@@ -1,5 +1,4 @@
-const CACHE_NAME = "fintrack-cache-v2";
-
+const CACHE_NAME = "fintrack-cache-v1";
 const FILES_TO_CACHE = [
     "./",
     "./index.html",
@@ -11,38 +10,84 @@ const FILES_TO_CACHE = [
 ];
 
 self.addEventListener("install", (event) => {
-    console.log("Service Worker installing");
+    self.skipWaiting();
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
-                console.log("Caching app shell");
                 return cache.addAll(FILES_TO_CACHE);
             })
     );
-    self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
-    console.log("Service Worker activating");
     event.waitUntil(
         caches.keys().then(keys =>
             Promise.all(
                 keys.map(key => {
                     if (key !== CACHE_NAME) {
-                        console.log("Deleting old cache:", key);
                         return caches.delete(key);
                     }
                 })
             )
-        )
+        ).then(() => {
+            return self.clients.claim();
+        })
     );
-    self.clients.claim();
 });
 
 self.addEventListener("fetch", (event) => {
-    event.respondWith(
-        caches.match(event.request).then(response => {
-            return response || fetch(event.request);
-        })
-    );
+    if (event.request.url.includes('/') && event.request.destination === 'document') {
+        event.respondWith(
+            fetch(event.request)
+                .then(response => {
+                    const responseClone = response.clone();
+                    caches.open(CACHE_NAME)
+                        .then(cache => {
+                            cache.put(event.request, responseClone);
+                        });
+                    return response;
+                })
+                .catch(() => {
+                    return caches.match(event.request);
+                })
+        );
+    } else if (event.request.url.includes('.css') || event.request.url.includes('.js')) {
+        event.respondWith(
+            fetch(event.request, { cache: 'no-cache' })
+                .then(response => {
+                    const responseClone = response.clone();
+                    caches.open(CACHE_NAME).then(cache => {
+                        cache.put(event.request, responseClone);
+                    });
+                    return response;
+                })
+                .catch(() => caches.match(event.request))
+        );
+    } else {
+        event.respondWith(
+            caches.match(event.request)
+                .then(response => {
+                    if (response) {
+                        return response;
+                    }
+                    return fetch(event.request).then(response => {
+                        if (!response || response.status !== 200 || response.type !== 'basic') {
+                            return response;
+                        }
+                        const responseToCache = response.clone();
+                        caches.open(CACHE_NAME)
+                            .then(cache => {
+                                cache.put(event.request, responseToCache);
+                            });
+                        return response;
+                    });
+                })
+        );
+    }
+});
+
+self.addEventListener('message', (event) => {
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
 });

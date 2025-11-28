@@ -1,3 +1,38 @@
+const APP_VERSION = 'v1.0.0';
+
+function checkForUpdates() {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.ready.then(registration => {
+            registration.update();
+        });
+    }
+}
+
+function forceUpdate() {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(registrations => {
+            for (let registration of registrations) {
+                registration.unregister().then(() => {
+                    window.location.reload();
+                });
+            }
+        });
+    }
+}
+
+if (localStorage.getItem('appVersion') !== APP_VERSION) {
+    localStorage.setItem('appVersion', APP_VERSION);
+    forceUpdate();
+}
+
+setInterval(checkForUpdates, 60 * 60 * 1000);
+
+document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+        checkForUpdates();
+    }
+});
+
 let wallets = JSON.parse(localStorage.getItem('wallets')) || [];
 let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
 let budgets = JSON.parse(localStorage.getItem('budgets')) || [];
@@ -37,11 +72,36 @@ if ('serviceWorker' in navigator) {
     window.addEventListener('load', function () {
         navigator.serviceWorker.register('./service-worker.js')
             .then(function (registration) {
-                console.log('Service Worker registered successfully with scope:', registration.scope);
+                setInterval(() => {
+                    registration.update();
+                }, 60 * 60 * 1000);
+
+                navigator.serviceWorker.addEventListener('controllerchange', () => {
+                    window.location.reload();
+                });
+
+                if (registration.waiting) {
+                    window.location.reload();
+                }
+
+                registration.addEventListener('updatefound', () => {
+                    const newWorker = registration.installing;
+                    newWorker.addEventListener('statechange', () => {
+                        if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                            window.location.reload();
+                        }
+                    });
+                });
             })
             .catch(function (error) {
                 console.log('Service Worker registration failed:', error);
             });
+    });
+
+    navigator.serviceWorker.addEventListener('message', event => {
+        if (event.data && event.data.type === 'UPDATE_AVAILABLE') {
+            window.location.reload();
+        }
     });
 } else {
     console.warn('Service Workers not supported');

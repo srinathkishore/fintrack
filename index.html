@@ -7,6 +7,9 @@
     <title>FinTrack - Personal Wallet</title>
     <meta name="theme-color" content="#60a5fa">
     <meta name="description" content="Track your expenses and manage your wallets with FinTrack">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <link rel="manifest" href="manifest.json">
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
@@ -19,7 +22,6 @@
 <body>
     <a href="#main-content" class="skip-link">Skip to main content</a>
     <div class="app-container">
-        <!-- Install Prompt -->
         <div class="install-prompt" id="install-prompt">
             <div class="install-icon">
                 <i class="fas fa-download"></i>
@@ -34,7 +36,6 @@
             </div>
         </div>
 
-        <!-- Welcome Modal -->
         <div class="modal active" id="welcome-modal">
             <div class="modal-content">
                 <div class="modal-header">
@@ -55,7 +56,6 @@
             </div>
         </div>
 
-        <!-- Header with Greeting and Balance -->
         <header role="banner">
             <div class="greeting" id="greeting">Welcome!</div>
             <div class="date" id="current-date" aria-live="polite">Loading date...</div>
@@ -69,14 +69,11 @@
             </div>
         </header>
 
-        <!-- Settings Button -->
         <div class="settings-btn" id="settings-btn">
             <i class="fas fa-cog"></i>
         </div>
 
-        <!-- Main Content -->
         <main id="main-content">
-            <!-- Wallets Section -->
             <section id="wallets-section" class="section active">
                 <div class="section-title">
                     <span>My Wallets</span>
@@ -104,7 +101,6 @@
                 </div>
             </section>
 
-            <!-- Transactions Section -->
             <section id="transactions-section" class="section">
                 <div class="section-title">
                     <span>All Transactions</span>
@@ -139,7 +135,6 @@
                 </div>
             </section>
 
-            <!-- Analytics Section -->
             <section id="analytics-section" class="section">
                 <div class="section-title">
                     <span>Spending Analytics</span>
@@ -205,7 +200,6 @@
                 </div>
             </section>
 
-            <!-- Budgets Section -->
             <section id="budgets-section" class="section">
                 <div class="section-title">
                     <span>Budget Management</span>
@@ -223,12 +217,10 @@
             </section>
         </main>
 
-        <!-- Add Transaction Button -->
         <div class="add-btn" id="main-add-btn">
             <i class="fas fa-plus"></i>
         </div>
 
-        <!-- Bottom Navigation -->
         <nav class="bottom-nav" role="navigation" aria-label="Main navigation">
             <div class="nav-item active" data-section="wallets-section">
                 <i class="fas fa-wallet"></i>
@@ -248,7 +240,6 @@
             </div>
         </nav>
 
-        <!-- Add Wallet Modal -->
         <div class="modal" id="wallet-modal">
             <div class="modal-content">
                 <div class="modal-header">
@@ -287,7 +278,6 @@
             </div>
         </div>
 
-        <!-- Add Transaction Modal -->
         <div class="modal" id="transaction-modal">
             <div class="modal-content">
                 <div class="modal-header">
@@ -371,7 +361,6 @@
             </div>
         </div>
 
-        <!-- Add Budget Modal -->
         <div class="modal" id="budget-modal">
             <div class="modal-content">
                 <div class="modal-header">
@@ -415,7 +404,6 @@
             </div>
         </div>
 
-        <!-- Settings Modal -->
         <div class="modal" id="settings-modal">
             <div class="modal-content">
                 <div class="modal-header">
@@ -452,7 +440,6 @@
             </div>
         </div>
 
-        <!-- Delete Confirmation Modal -->
         <div class="modal" id="delete-modal">
             <div class="modal-content">
                 <div class="modal-header">
@@ -469,7 +456,6 @@
             </div>
         </div>
 
-        <!-- Notification Container -->
         <div class="notification-container" id="notification-container"></div>
     </div>
     <script src="script.js"></script>
